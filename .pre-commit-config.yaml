@@ -1,0 +1,35 @@
+# python -m venv .venv && source .venv/bin/activate
+# pre-commit install --hook-type pre-commit
+# pre-commit install --hook-type pre-push
+# pre-commit install --install-hooks
+# Note: add `--no-verify` flag to git commands to disable hooks.
+fail_fast: false
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+        name: Checking merge conflicts
+      - id: end-of-file-fixer
+        name: Checking EOF
+        exclude: '(README\.md|thirdparty)'
+      - id: trailing-whitespace
+        name: Checking trailing whitespaces
+        exclude: 'thirdparty'
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: clang-format
+        name: Running clang-format
+        exclude: 'thirdparty'
+  - repo: local
+    hooks:
+      # pre-commit run --hook-stage manual tests
+      - id: tests
+        name: Running tests
+        language: system
+        # verbose: true
+        pass_filenames: false
+        entry: make test
+        always_run: true
+        stages: [manual, push]
