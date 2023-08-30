@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.5)
 macro(list_sources OUTPUT DIRECTORY)
     file(GLOB_RECURSE ALL_SOURCES "${DIRECTORY}/*.c*")
     list(APPEND ${OUTPUT} ${ALL_SOURCES})
-	list(APPEND ${OUTPUT} ${ALL_SOURCES})
 	list(FILTER ${OUTPUT} EXCLUDE REGEX ".ignore")
 endmacro()
 

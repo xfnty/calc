@@ -14,7 +14,7 @@ endif()
 
 # ===== Project ===== #
 set(CMAKE_CXX_STANDARD 20)
-project("project" LANGUAGES C CXX)
+project("calc" LANGUAGES C CXX)
 
 
 # ===== Third Party libraries ===== #
@@ -24,8 +24,10 @@ include_thirdparty("Catch2" "src" "Catch2::Catch2WithMain")
 
 
 # ===== Source files ===== #
-list_sources(SOURCES "src")
 set(SOURCE_MAIN "src/main.cpp")
+
+list_sources(SOURCES "src")
+list(FILTER SOURCES EXCLUDE REGEX "main")
 
 
 # ===== Include directories ===== #
@@ -39,7 +41,15 @@ link_libraries(${LINK_LIBRARIES})
 
 
 # ===== Targets ===== #
-add_executable(${PROJECT_NAME} ${SOURCE_MAIN} ${SOURCES})
+set(PROJECT_LIBRARY_NAME "${PROJECT_NAME}-shared")
+if (${SOURCES})
+    add_library("${PROJECT_LIBRARY_NAME}" STATIC ${SOURCES})
+else()
+    add_library("${PROJECT_LIBRARY_NAME}" INTERFACE)
+endif()
+
+add_executable(${PROJECT_NAME} ${SOURCE_MAIN})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_LIBRARY_NAME})
 set_target_properties(
     ${PROJECT_NAME}
     PROPERTIES
@@ -51,9 +61,6 @@ set_target_properties(
 
 # ===== Tests ===== #
 if (BUILD_TESTING)
-    set(PROJECT_LIBRARY_NAME "${PROJECT_NAME}-shared")
-    add_library("${PROJECT_LIBRARY_NAME}" STATIC ${SOURCES})
-
     enable_testing()
     add_subdirectory("tests")
 endif()

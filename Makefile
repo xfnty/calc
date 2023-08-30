@@ -26,7 +26,7 @@ else
 	echo = echo "$(1)"
 endif
 
-PROJECT_NAME:=project
+PROJECT_NAME:=calc
 CMAKE_DIR:=.cmake
 OUTPUT_DIR:=bin
 EXE=$(PROJECT_NAME)
