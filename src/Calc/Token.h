@@ -2,6 +2,7 @@
 #define _CALC_TOKEN_H_
 
 #include <string>
+#include <cstdint>
 
 
 namespace Calc {
@@ -35,10 +36,10 @@ namespace Calc {
         };
 
     public:
-        const Type  type;
-        const int   number;
+        const Type      type;
+        const int64_t   number;
 
-        Token(Type type, int number = 0) : type(type), number(number) {}
+        Token(Type type, int64_t number = 0) : type(type), number(number) {}
     };
 }
 

@@ -42,7 +42,7 @@ namespace Calc {
                 tokens.push_back(Token(Token::Type::CloseBracket));
 
             else if (chr >= '0' && chr <= '9') {
-                int number = 0;
+                int64_t number = 0;
                 do {
                     number *= 10;
                     number += text[cursor] - '0';
