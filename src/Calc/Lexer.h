@@ -8,11 +8,28 @@
 
 #include <Calc/Token.h>
 
+
 namespace Calc {
 
     class Lexer {
     public:
-        tl::expected<std::vector<Token>, std::string> Process(const std::string& text);
+        class Error {
+        public:
+            enum class Type {
+                InvalidToken,
+            };
+
+        public:
+            Error(const std::string& source, int pos, std::string desc, Type type);
+
+            const std::string&  source;
+            const int           position;
+            const std::string   description;
+            const Type          type;
+        };
+
+    public:
+        tl::expected<std::vector<Token>, Error> Process(const std::string& text);
     };
 
 }
