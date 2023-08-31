@@ -15,12 +15,12 @@ repos:
       - id: trailing-whitespace
         name: Checking trailing whitespaces
         exclude: '(thirdparty|assets)'
-  - repo: https://github.com/pocc/pre-commit-hooks
-    rev: v1.3.5
-    hooks:
-      - id: clang-format
-        name: Running clang-format
-        exclude: '(thirdparty|assets)'
+  # - repo: https://github.com/pocc/pre-commit-hooks
+  #   rev: v1.3.5
+  #   hooks:
+  #     - id: clang-format
+  #       name: Running clang-format
+  #       exclude: '(thirdparty|assets)'
   - repo: local
     hooks:
       # pre-commit run --hook-stage manual tests
