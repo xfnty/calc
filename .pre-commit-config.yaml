@@ -31,4 +31,4 @@ repos:
         pass_filenames: false
         entry: make test
         always_run: true
-        stages: [manual, push]
+        # stages: [manual, push]

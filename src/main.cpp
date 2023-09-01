@@ -1,8 +1,12 @@
 #include <stdio.h>
+
 #include <spdlog/spdlog.h>
+#include <fmt/format.h>
 
 #include <Calc/Lexer.h>
 #include <Calc/Token.h>
+#include <Calc/Parser.h>
+
 
 int main(int argc, char const* argv[]) {
     if (argc < 2) {
@@ -15,11 +19,9 @@ int main(int argc, char const* argv[]) {
         expression += argv[i];
         expression += (i < argc - 1) ? " " : "";
     }
-
     SPDLOG_DEBUG("expression=\"{}\"", expression);
 
     Calc::Lexer lexer;
-
     auto tokens = lexer.Process(expression);
     if (!tokens.has_value()) {
         SPDLOG_ERROR(tokens.error().description);
@@ -27,13 +29,28 @@ int main(int argc, char const* argv[]) {
         for (int i = 0; i < tokens.error().position; i++)
             printf(" ");
         printf("^\n");
-        return -1;
+        return 1;
     }
 
-    for (auto token : tokens.value()) {
+    std::string tokens_repr = "[";
+    for (int i = 0; i < tokens.value().size(); i++) {
+        auto token = tokens.value()[i];
+
         if (token.type == Calc::Token::Type::Number)
-            SPDLOG_TRACE("{}({})", Calc::Token::Names[(int)token.type], token.number);
+            tokens_repr += fmt::format("{}({})", Calc::Token::Names[(int)token.type], token.number);
         else
-            SPDLOG_TRACE(Calc::Token::Names[(int)token.type]);
+            tokens_repr += Calc::Token::Names[(int)token.type];
+
+        if (i + 1 < tokens.value().size())
+            tokens_repr += ", ";
+    }
+    tokens_repr += "]";
+    SPDLOG_DEBUG("tokens={}", tokens_repr);
+
+    Calc::Parser parser;
+    auto ast = parser.Process(tokens.value());
+    if (!ast.has_value()) {
+        SPDLOG_ERROR(ast.error().description);
+        return 2;
     }
 }

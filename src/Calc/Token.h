@@ -40,6 +40,14 @@ namespace Calc {
         const int64_t   number;
 
         Token(Type type, int64_t number = 0) : type(type), number(number) {}
+
+        bool operator ==(const Token& other) const {
+            return type == other.type && number == other.number;
+        }
+
+        bool operator !=(const Token& other) const {
+            return type != other.type || number != other.number;
+        }
     };
 }
 
