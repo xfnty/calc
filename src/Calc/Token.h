@@ -17,24 +17,20 @@ namespace Calc {
             Subtract,       // '-'
             Divide,         // '/'
             Multiply,       // '*'
-            Modulo,         // '%'
-            Power,          // '^'
             // Other
             OpenBracket,    // '('
             CloseBracket,   // ')'
         };
 
         static constexpr const char* Names[] = {
-            "Invalid",
-            "Number",
-            "Add",
-            "Subtract",
-            "Divide",
-            "Multiply",
-            "Modulo",
-            "Power",
-            "OpenBracket",
-            "CloseBracket",
+            "INVALID",
+            "NUM",
+            "+",
+            "-",
+            "/",
+            "*",
+            "(",
+            ")",
         };
 
     public:

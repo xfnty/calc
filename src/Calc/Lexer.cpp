@@ -32,10 +32,6 @@ namespace Calc {
                 tokens.push_back(Token(Token::Type::Multiply));
             else if (chr == '/')
                 tokens.push_back(Token(Token::Type::Divide));
-            else if (chr == '%')
-                tokens.push_back(Token(Token::Type::Modulo));
-            else if (chr == '^')
-                tokens.push_back(Token(Token::Type::Power));
             else if (chr == '(')
                 tokens.push_back(Token(Token::Type::OpenBracket));
             else if (chr == ')')

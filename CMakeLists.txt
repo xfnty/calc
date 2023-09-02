@@ -14,7 +14,7 @@ endif()
 
 # ===== Project ===== #
 set(CMAKE_CXX_STANDARD 20)
-project("calc" LANGUAGES C CXX)
+project("calc" LANGUAGES CXX)
 
 
 # ===== Third Party libraries ===== #
