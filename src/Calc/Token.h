@@ -12,12 +12,14 @@ namespace Calc {
         enum class Type : int {
             Invalid,
             Number,         // '1024'
+            // Operators
             Add,            // '+'
             Subtract,       // '-'
             Divide,         // '/'
             Multiply,       // '*'
             Modulo,         // '%'
             Power,          // '^'
+            // Other
             OpenBracket,    // '('
             CloseBracket,   // ')'
         };

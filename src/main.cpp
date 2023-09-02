@@ -1,11 +1,11 @@
+#include <memory>
 #include <stdio.h>
 
-#include <spdlog/spdlog.h>
 #include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
 #include <Calc/Lexer.h>
 #include <Calc/Token.h>
-#include <Calc/Parser.h>
 
 
 int main(int argc, char const* argv[]) {
@@ -46,11 +46,4 @@ int main(int argc, char const* argv[]) {
     }
     tokens_repr += "]";
     SPDLOG_DEBUG("tokens={}", tokens_repr);
-
-    Calc::Parser parser;
-    auto ast = parser.Process(tokens.value());
-    if (!ast.has_value()) {
-        SPDLOG_ERROR(ast.error().description);
-        return 2;
-    }
 }
