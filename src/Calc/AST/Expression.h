@@ -8,17 +8,6 @@
 #include <Calc/AST/ExpressionVisitor.h>
 
 
-/*
- * Grammar rules:
- *     expression = literal | unary | binary | grouping
- *
- *     literal = NUMBER
- *     operator = "+" | "-" | "*" | "/"
- *
- *     grouping = "(" expression ")"
- *     unary = "-" (literal | grouping)
- *     binary = expression operator expression
- */
 namespace Calc::AST {
 
     class Expression {

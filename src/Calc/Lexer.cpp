@@ -12,7 +12,7 @@ namespace Calc {
     : source(src), position(pos), description(desc), type(type) {
     }
 
-    tl::expected<std::vector<Token>, Lexer::Error> Lexer::Process(const std::string& text) {
+    tl::expected<std::vector<Token>, Lexer::Error> Lexer::Tokenize(const std::string& text) {
         std::vector<Token> tokens;
 
         int cursor = 0;
@@ -48,7 +48,7 @@ namespace Calc {
                 while (cursor < text.size() && chr >= '0' && chr <= '9');
                 cursor--;
 
-                tokens.push_back(Token(Token::Type::Number, number));
+                tokens.push_back(Token(number));
             }
 
             else {

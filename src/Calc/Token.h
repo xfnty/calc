@@ -37,7 +37,8 @@ namespace Calc {
         const Type      type;
         const int64_t   number;
 
-        Token(Type type, int64_t number = 0) : type(type), number(number) {}
+        Token(Type type) : type(type), number(0) {}
+        Token(int64_t number) : type(Type::Number), number(number) {}
 
         bool operator ==(const Token& other) const {
             return type == other.type && number == other.number;

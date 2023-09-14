@@ -29,7 +29,7 @@ namespace Calc {
         };
 
     public:
-        tl::expected<std::vector<Token>, Error> Process(const std::string& text);
+        static tl::expected<std::vector<Token>, Error> Tokenize(const std::string& text);
     };
 
 }

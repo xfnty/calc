@@ -1,6 +1,8 @@
 #include <memory>
 #include <stdio.h>
+#include <filesystem>
 
+#include <fmt/std.h>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
@@ -17,7 +19,10 @@ using namespace ExpressionVisitors;
 
 int main(int argc, char const* argv[]) {
     if (argc < 2) {
-        SPDLOG_TRACE("Usage: calc <expression>");
+        SPDLOG_TRACE(
+            "Usage: {} <expression>",
+            std::filesystem::path(argv[0]).filename().stem()
+        );
         return 0;
     }
 
@@ -28,8 +33,7 @@ int main(int argc, char const* argv[]) {
     }
     SPDLOG_DEBUG("expression=\"{}\"", expression);
 
-    Lexer lexer;
-    auto tokens = lexer.Process(expression);
+    auto tokens = Lexer::Tokenize(expression);
     if (!tokens.has_value()) {
         SPDLOG_ERROR(tokens.error().description);
         printf("| %s\n| ", tokens.error().source.c_str());
@@ -38,6 +42,7 @@ int main(int argc, char const* argv[]) {
         printf("^\n");
         return 1;
     }
+
     std::string tokens_repr = "[";
     for (int i = 0; i < tokens.value().size(); i++) {
         auto token = tokens.value()[i];
@@ -53,18 +58,19 @@ int main(int argc, char const* argv[]) {
     tokens_repr += "]";
     SPDLOG_DEBUG("tokens={}", tokens_repr);
 
+    // WTF: temporary values "expire" (probably) during the execution
     auto sample_expr = *(new BinaryExpression(
-        *(new LiteralExpression(Token(Token::Type::Number, 2))),
+        *(new LiteralExpression(Token(2))),
         Token::Type::Add,
         *(new GroupingExpression(
             *(new BinaryExpression(
                 *(new UnaryExpression(
                     Token::Type::Subtract,
-                    *(new LiteralExpression(Token(Token::Type::Number, 10)))
+                    *(new LiteralExpression(Token(10)))
                 )),
                 Token(Token::Type::Divide),
                 *(new LiteralExpression(
-                    Token(Token::Type::Number, 5)
+                    Token(5)
                 ))
             ))
         ))
