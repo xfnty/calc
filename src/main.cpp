@@ -6,15 +6,12 @@
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
-#include <Calc/Lexer.h>
 #include <Calc/Token.h>
-#include <Calc/AST/Expression.h>
-#include <Calc/AST/ExpressionVisitor.h>
-#include <Calc/AST/ExpressionVisitors/ASTPrinter.h>
+#include <Calc/Lexer.h>
+#include <Calc/Parser.h>
+#include <Calc/Expression.h>
 
 using namespace Calc;
-using namespace AST;
-using namespace ExpressionVisitors;
 
 
 int main(int argc, char const* argv[]) {
@@ -58,25 +55,16 @@ int main(int argc, char const* argv[]) {
     tokens_repr += "]";
     SPDLOG_DEBUG("tokens={}", tokens_repr);
 
-    // WTF: temporary values "expire" (probably) during the execution
-    auto sample_expr = *(new BinaryExpression(
-        *(new LiteralExpression(Token(2))),
-        Token::Type::Add,
-        *(new GroupingExpression(
-            *(new BinaryExpression(
-                *(new UnaryExpression(
-                    Token::Type::Subtract,
-                    *(new LiteralExpression(Token(10)))
-                )),
-                Token(Token::Type::Divide),
-                *(new LiteralExpression(
-                    Token(5)
-                ))
-            ))
-        ))
-    ));
+    auto root = Parser::Parse(tokens.value());
+    if (!root.has_value()) {
+        SPDLOG_ERROR("failed to parse tokens");
+        return 2;
+    }
+    ExpressionPrinter printer;
+    SPDLOG_DEBUG("ptr: {}", (void*)root.value());
+    root.value()->Accept(printer);
+    SPDLOG_TRACE("order: {}", printer.buffer);
+    SPDLOG_TRACE("result: {}", root.value()->Evaluate());
 
-    ASTPrinter ast_printer;
-    sample_expr.Accept(ast_printer);
-    SPDLOG_DEBUG("ast=({})", ast_printer.GetBuffer());
+    return 0;
 }

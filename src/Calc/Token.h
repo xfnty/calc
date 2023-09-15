@@ -35,10 +35,10 @@ namespace Calc {
 
     public:
         const Type      type;
-        const int64_t   number;
+        const double   number;
 
         Token(Type type) : type(type), number(0) {}
-        Token(int64_t number) : type(Type::Number), number(number) {}
+        Token(double number) : type(Type::Number), number(number) {}
 
         bool operator ==(const Token& other) const {
             return type == other.type && number == other.number;
