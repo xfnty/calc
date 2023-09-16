@@ -1,6 +1,7 @@
 #include <Calc/Lexer.h>
 
 #include <fmt/format.h>
+#include <spdlog/spdlog.h>
 #include <tl/expected.hpp>
 
 #include <Calc/Token.h>
@@ -43,11 +44,21 @@ namespace Calc {
                     number *= 10;
                     number += text[cursor] - '0';
                     cursor++;
-                    chr = text[cursor];
                 }
-                while (cursor < text.size() && chr >= '0' && chr <= '9');
-                cursor--;
+                while (cursor < text.size() && (text[cursor] >= '0' && text[cursor] <= '9'));
 
+                if (text[cursor] == '.') {
+                    cursor++;
+
+                    double fp = 1;
+                    while (cursor < text.size() && (text[cursor] >= '0' && text[cursor] <= '9')) {
+                        number += (text[cursor] - '0') / (10.0 * fp);
+                        cursor++;
+                        fp *= 10;
+                    }
+                }
+
+                cursor--;
                 tokens.push_back(Token(number));
             }
 
