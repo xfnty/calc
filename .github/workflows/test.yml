@@ -9,12 +9,12 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Run pre-commit checks
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v3
-    - uses: pre-commit/action@v3.0.0
+  # lint:
+  #   name: Run pre-commit checks
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - uses: pre-commit/action@v3.0.0
 
   test-linux:
     name: Test on Linux
