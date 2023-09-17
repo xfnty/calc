@@ -93,7 +93,7 @@ namespace Calc {
 
         void VisitUnaryExpression(const UnaryExpression* expr) override {
             buffer += "-(";
-            expr->Accept(*this);
+            expr->expression->Accept(*this);
             buffer += ")";
         }
 
