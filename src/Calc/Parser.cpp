@@ -1,82 +1,75 @@
 #include <Calc/Parser.h>
 
-#include <algorithm>
-#include "Calc/Expression.h"
-#include "Calc/Token.h"
-#include "tl/expected.hpp"
-
-#define ASSERT_RETURN(cond, x, value) do { if (!(cond)) { SPDLOG_DEBUG("{}", (x)); return (value);} } while(0)
+#define ASSERT_RETURN_HAS_VALUE(value) do { if (!(value).has_value()) return (value); } while(0)
 
 
 namespace Calc {
 
     tl::expected<Expression*, Parser::Error> Parser::Parse(const std::vector<Token>& tokens) {
         Parser parser(tokens);
-
-        Expression* expr = parser.Term();
-        if (expr == nullptr)
-            return tl::unexpected(Parser::Error());
-
-        return expr;
+        return parser.Term();
     }
 
-    Expression* Parser::Term() {
-        Expression* expr = Factor();
-        ASSERT_RETURN(expr != nullptr, 1, nullptr);
+    tl::expected<Expression*, Parser::Error> Parser::Term() {
+        tl::expected<Expression*, Parser::Error> expr = Factor();
+        ASSERT_RETURN_HAS_VALUE(expr);
 
         while (MatchAnyToken({Token::Type::Add, Token::Type::Subtract})) {
             Token op = PeekToken(-1);
 
-            Expression* right = Factor();
-            ASSERT_RETURN(right != nullptr, 2, nullptr);
+            tl::expected<Expression*, Parser::Error> right = Factor();
+            ASSERT_RETURN_HAS_VALUE(right);
 
-            expr = new BinaryExpression(expr, op, right);  // FIXME: *new*
+            // FIXME: *new*
+            expr.value() = new BinaryExpression(expr.value(), op, right.value());
         }
 
         return expr;
     }
 
-    Expression* Parser::Factor() {
-        Expression* expr = Unary();
-        ASSERT_RETURN(expr != nullptr, 3, nullptr);
+    tl::expected<Expression*, Parser::Error> Parser::Factor() {
+        tl::expected<Expression*, Parser::Error> expr = Unary();
+        ASSERT_RETURN_HAS_VALUE(expr);
 
         while (MatchAnyToken({Token::Type::Multiply, Token::Type::Divide})) {
             Token op = PeekToken(-1);
 
-            Expression* right = Unary();
-            ASSERT_RETURN(right != nullptr, 4, nullptr);
+            tl::expected<Expression*, Parser::Error> right = Unary();
+            ASSERT_RETURN_HAS_VALUE(right);
 
-            expr = new BinaryExpression(expr, op, right);
+            expr.value() = new BinaryExpression(expr.value(), op, right.value());
         }
 
         return expr;
     }
 
-    Expression* Parser::Unary() {
+    tl::expected<Expression*, Parser::Error> Parser::Unary() {
         if (MatchAnyToken({Token::Type::Subtract})) {
-            Expression* expr = Primary();
-            ASSERT_RETURN(expr != nullptr, 5, nullptr);
+            tl::expected<Expression*, Parser::Error> expr = Primary();
+            ASSERT_RETURN_HAS_VALUE(expr);
 
-            return new UnaryExpression(Token(Token::Type::Subtract), expr);
+            return new UnaryExpression(Token(Token::Type::Subtract), expr.value());
         }
 
-        Expression* expr = Primary();
-        ASSERT_RETURN(expr != nullptr, 6, nullptr);
-        return expr;
+        return Primary();
     }
 
-    Expression* Parser::Primary() {
+    tl::expected<Expression*, Parser::Error> Parser::Primary() {
         if (MatchAnyToken({Token::Type::Number}))
             return new LiteralExpression(PeekToken(-1));
 
         if (MatchAnyToken({Token::Type::OpenBracket})) {
-            Expression* expr = Term();
-            ASSERT_RETURN(expr != nullptr, 7, nullptr);
-            ASSERT_RETURN(MatchAnyToken({Token::Type::CloseBracket}), 8, nullptr);
+            tl::expected<Expression*, Parser::Error> expr = Term();
+            ASSERT_RETURN_HAS_VALUE(expr);
+
+            if (!MatchAnyToken({Token::Type::CloseBracket})) {
+                return tl::unexpected(Parser::Error("Expected ')' token."));
+            }
+
             return expr;
         }
 
-        ASSERT_RETURN(false, 9, nullptr);
+        return tl::unexpected(Parser::Error("Could not parse Primary expression."));
     }
 
     void Parser::Advance(int token_count) {

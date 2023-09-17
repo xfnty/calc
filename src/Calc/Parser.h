@@ -36,12 +36,9 @@ namespace Calc {
     public:
         class Error {
         public:
-            enum class Type {
-                SyntaxError,
-            };
+            const std::string description;
 
-        public:
-            Error() {}
+            Error(const std::string& description) : description(description) {}
         };
 
     public:
@@ -53,10 +50,10 @@ namespace Calc {
 
         Parser(const std::vector<Token>& tokens) : tokens(tokens) {};
 
-        Expression* Term();
-        Expression* Factor();
-        Expression* Unary();
-        Expression* Primary();
+        tl::expected<Expression*, Error> Term();
+        tl::expected<Expression*, Error> Factor();
+        tl::expected<Expression*, Error> Unary();
+        tl::expected<Expression*, Error> Primary();
 
         void Advance(int token_count = 1);
         Token PeekToken(int offset = 0) const;

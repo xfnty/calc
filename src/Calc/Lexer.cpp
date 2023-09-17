@@ -1,8 +1,8 @@
 #include <Calc/Lexer.h>
 
 #include <fmt/format.h>
-#include <spdlog/spdlog.h>
 #include <tl/expected.hpp>
+#include <spdlog/spdlog.h>
 
 #include <Calc/Token.h>
 

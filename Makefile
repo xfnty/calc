@@ -58,7 +58,7 @@ $(BUILD):
 	-$(call cp,$(call path,"tests/assets/."),$(call path,"$(TEST_DIR)/."))
 	$(_BUILD)
 
-$(RUN): build
+$(RUN):
 	echo ----- Running -----
 	-$(call cp,"assets/.","$(OUTPUT_DIR)/.")
 	cd "$(OUTPUT_DIR)" && "$(call exec,$(EXE))" $(args)

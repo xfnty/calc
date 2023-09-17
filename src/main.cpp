@@ -57,14 +57,14 @@ int main(int argc, char const* argv[]) {
 
     auto root = Parser::Parse(tokens.value());
     if (!root.has_value()) {
-        SPDLOG_ERROR("failed to parse tokens");
+        SPDLOG_ERROR("{}", root.error().description);
         return 2;
     }
     ExpressionPrinter printer;
-    SPDLOG_DEBUG("ptr: {}", (void*)root.value());
     root.value()->Accept(printer);
-    SPDLOG_TRACE("order: {}", printer.buffer);
-    SPDLOG_TRACE("result: {}", root.value()->Evaluate());
+    SPDLOG_DEBUG("ast={}", printer.buffer);
+
+    SPDLOG_TRACE("{}", root.value()->Evaluate());
 
     return 0;
 }

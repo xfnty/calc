@@ -1,10 +1,10 @@
 #ifndef _CALC_EXPRESSION_H_
 #define _CALC_EXPRESSION_H_
 
+#include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
 #include <Calc/Token.h>
-#include "fmt/format.h"
 
 
 namespace Calc {

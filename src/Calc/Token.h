@@ -11,7 +11,7 @@ namespace Calc {
     public:
         enum class Type : int {
             Invalid,
-            Number,         // '1024'
+            Number,         // '1024.5'
             // Operators
             Add,            // '+'
             Subtract,       // '-'
@@ -22,6 +22,7 @@ namespace Calc {
             CloseBracket,   // ')'
         };
 
+        // Use BetterEnums?
         static constexpr const char* Names[] = {
             "INVALID",
             "NUM",
