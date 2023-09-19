@@ -28,7 +28,10 @@ int main(int argc, char const* argv[]) {
         expression += argv[i];
         expression += (i < argc - 1) ? " " : "";
     }
+
+#ifndef NDEBUG
     SPDLOG_DEBUG("expression=\"{}\"", expression);
+#endif
 
     auto tokens = Lexer::Tokenize(expression);
     if (!tokens.has_value()) {
@@ -40,6 +43,7 @@ int main(int argc, char const* argv[]) {
         return 1;
     }
 
+#ifndef NDEBUG
     std::string tokens_repr = "[";
     for (int i = 0; i < tokens.value().size(); i++) {
         auto token = tokens.value()[i];
@@ -54,15 +58,19 @@ int main(int argc, char const* argv[]) {
     }
     tokens_repr += "]";
     SPDLOG_DEBUG("tokens={}", tokens_repr);
+#endif
 
     auto root = Parser::Parse(tokens.value());
     if (!root.has_value()) {
         SPDLOG_ERROR("{}", root.error().description);
         return 2;
     }
+
+#ifndef NDEBUG
     ExpressionPrinter printer;
     root.value()->Accept(printer);
     SPDLOG_DEBUG("ast={}", printer.buffer);
+#endif
 
     SPDLOG_TRACE("{}", root.value()->Evaluate());
 

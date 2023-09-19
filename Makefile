@@ -39,7 +39,10 @@ RUN:=run r
 DEBUG:=debug d
 TEST:=test t
 
-_CONFIGURE=cmake -B "$(CMAKE_DIR)" -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+args?=
+build_type?=Debug
+
+_CONFIGURE=cmake -B "$(CMAKE_DIR)" -S . -DCMAKE_BUILD_TYPE=$(build_type) -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 _COPY_CCOMMANDS=-$(call cp,"$(CMAKE_DIR)/compile_commands.json","compile_commands.json")
 _BUILD=cmake --build "$(CMAKE_DIR)" -j4
 
@@ -54,21 +57,18 @@ $(CONFIGURE):
 $(BUILD):
 	echo ----- Building -----
 	$(call mkdir,$(OUTPUT_DIR))
-	-$(call cp,"assets/.","$(OUTPUT_DIR)/.")
 	-$(call cp,$(call path,"tests/assets/."),$(call path,"$(TEST_DIR)/."))
 	$(_BUILD)
 
 $(RUN):
 	echo ----- Running -----
-	-$(call cp,"assets/.","$(OUTPUT_DIR)/.")
 	cd "$(OUTPUT_DIR)" && "$(call exec,$(EXE))" $(args)
 
-$(DEBUG): build
+$(DEBUG):
 	echo ----- Debugging -----
-	-$(call cp,"assets/.","$(OUTPUT_DIR)/.")
 	cd "$(OUTPUT_DIR)" && gdb -q --return-child-result --args "$(EXE)" $(args)
 
-$(TEST): build
+$(TEST):
 	echo ----- Testing -----
 	-$(call cp,$(call path,"tests/assets/."),$(call path,"$(TEST_DIR)/."))
 	cd "$(TEST_DIR)" && "$(call exec,$(TEST_EXE))" --skip-benchmarks --allow-running-no-tests -v high $(args)
