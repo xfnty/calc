@@ -69,7 +69,7 @@ namespace Calc {
             return expr;
         }
 
-        return tl::unexpected(Parser::Error("Could not parse Primary expression."));
+        return tl::unexpected(Parser::Error("Could not parse the expression."));
     }
 
     void Parser::Advance(int token_count) {
