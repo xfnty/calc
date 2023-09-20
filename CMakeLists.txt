@@ -7,8 +7,7 @@ set(PROJECT_BUILD_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 option(BUILD_SHARED_LIBS "Build shared libs" OFF)
 option(BUILD_TESTING "Build tests" ON)
 if (MSVC)
-    add_compile_options("/wd4267" "/wd4996")
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_compile_options("/std:c++latest")
 endif()
 
 
