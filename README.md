@@ -20,6 +20,7 @@
 - [spdlog](https://github.com/gabime/spdlog)
 
 ## TODO
+- Parser error messages
 - More operators: `^`, `%`, `|...|`, `x!` ...
 - Builtin constants: `PI`, `e`, etc.
 - Builtin functions: `sin()`, `ctan()`, `ln()` ...
