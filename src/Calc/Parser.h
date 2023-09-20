@@ -1,6 +1,7 @@
 #ifndef _CALC_PARSER_H_
 #define _CALC_PARSER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <initializer_list>
@@ -30,6 +31,7 @@
         Term        -> Factor ( ("+" / "-") Factor )*   [NOTE: references the rule with higher priority]
         Expression  -> Term                             [any use for that?]
 */
+
 namespace Calc {
 
     class Parser {
@@ -41,8 +43,10 @@ namespace Calc {
             Error(const std::string& description) : description(description) {}
         };
 
+        using ParseResult = tl::expected<ExpressionPtr, Error>;
+
     public:
-        static tl::expected<Expression*, Error> Parse(const std::vector<Token>& tokens);
+        static ParseResult Parse(const std::vector<Token>& tokens);
 
     private:
         const std::vector<Token>& tokens;
@@ -50,10 +54,10 @@ namespace Calc {
 
         Parser(const std::vector<Token>& tokens) : tokens(tokens) {};
 
-        tl::expected<Expression*, Error> Term();
-        tl::expected<Expression*, Error> Factor();
-        tl::expected<Expression*, Error> Unary();
-        tl::expected<Expression*, Error> Primary();
+        ParseResult Term();
+        ParseResult Factor();
+        ParseResult Unary();
+        ParseResult Primary();
 
         void Advance(int token_count = 1);
         Token PeekToken(int offset = 0) const;
