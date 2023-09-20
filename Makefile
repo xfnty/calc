@@ -64,11 +64,11 @@ $(RUN):
 	echo ----- Running -----
 	cd "$(OUTPUT_DIR)" && "$(call exec,$(EXE))" $(args)
 
-$(DEBUG):
+$(DEBUG): build
 	echo ----- Debugging -----
 	cd "$(OUTPUT_DIR)" && gdb -q --return-child-result --args "$(EXE)" $(args)
 
-$(TEST):
+$(TEST): build
 	echo ----- Testing -----
 	-$(call cp,$(call path,"tests/assets/."),$(call path,"$(TEST_DIR)/."))
 	cd "$(TEST_DIR)" && "$(call exec,$(TEST_EXE))" --skip-benchmarks --allow-running-no-tests -v high $(args)
