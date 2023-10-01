@@ -1,6 +1,8 @@
 #ifndef _CALC_EXPRESSION_H_
 #define _CALC_EXPRESSION_H_
 
+#include <cmath>
+#include <cstdint>
 #include <memory>
 
 #include <fmt/format.h>
@@ -27,6 +29,7 @@ namespace Calc {
     class UnaryExpression;
     class BinaryExpression;
     class GroupingExpression;
+    class AbsoluteExpression;
 
     class ExpressionVisitor {
     public:
@@ -34,6 +37,7 @@ namespace Calc {
         virtual void VisitUnaryExpression(const UnaryExpression& expr) = 0;
         virtual void VisitBinaryExpression(const BinaryExpression& expr) = 0;
         virtual void VisitGroupingExpression(const GroupingExpression& expr) = 0;
+        virtual void VisitAbsoluteExpression(const AbsoluteExpression& expr) = 0;
     };
 
     class LiteralExpression : public Expression {
@@ -53,7 +57,17 @@ namespace Calc {
 
         UnaryExpression(Token op, ExpressionPtr right) : op(op), expression(right) {}
         void Accept(ExpressionVisitor& visitor) const override { visitor.VisitUnaryExpression(*this); }
-        double Evaluate() const override { return -expression->Evaluate(); }
+        double Evaluate() const override {
+            auto res = expression->Evaluate();
+            if (op.type == Token::Type::Factorial) {
+                int64_t r = 1;
+                for (int i = std::abs((int64_t)res); i > 0; i--)
+                    r *= i;
+                return r;
+            }
+
+            return -res;
+        }
     };
 
     class BinaryExpression : public Expression {
@@ -73,6 +87,8 @@ namespace Calc {
                 case Token::Type::Subtract: return a - b;
                 case Token::Type::Multiply: return a * b;
                 case Token::Type::Divide:   return a / b;
+                case Token::Type::Power:    return std::pow(a, b);
+                case Token::Type::Modulo:   return std::fmod(a, b);
                 default: return 0;
             }
         }
@@ -87,6 +103,15 @@ namespace Calc {
         double Evaluate() const override { return expression->Evaluate(); }
     };
 
+    class AbsoluteExpression : public GroupingExpression {
+    public:
+        AbsoluteExpression(ExpressionPtr expr) : GroupingExpression(expr) {};
+        void Accept(ExpressionVisitor& visitor) const override { visitor.VisitAbsoluteExpression(*this); }
+        double Evaluate() const override {
+            return std::abs(expression->Evaluate());
+        }
+    };
+
     class ExpressionPrinter : public ExpressionVisitor {
     public:
         std::string buffer;
@@ -96,9 +121,15 @@ namespace Calc {
         }
 
         void VisitUnaryExpression(const UnaryExpression& expr) override {
-            buffer += "-(";
+            if (expr.op.type == Token::Type::Subtract)
+                buffer += Token::Names[(int)expr.op.type];
+            
+            buffer += "(";
             expr.expression->Accept(*this);
             buffer += ")";
+
+            if (expr.op.type == Token::Type::Factorial)
+                buffer += Token::Names[(int)expr.op.type];
         }
 
         void VisitBinaryExpression(const BinaryExpression& expr) override {
@@ -112,9 +143,15 @@ namespace Calc {
         }
 
         void VisitGroupingExpression(const GroupingExpression& expr) override {
-            buffer += "(";
+            buffer += '(';
             expr.expression->Accept(*this);
-            buffer += ")";
+            buffer += ')';
+        }
+
+        void VisitAbsoluteExpression(const AbsoluteExpression& expr) override {
+            buffer += '|';
+            expr.expression->Accept(*this);
+            buffer += '|';
         }
     };
 

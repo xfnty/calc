@@ -25,11 +25,11 @@
         Expression  - any of the things above
 
     Grammar:
-        Primary     -> NUMBER | "(" Expression ")"
-        Unary       -> "-" Primary
-        Factor      -> Unary ( ("*" / "/") Unary )*     [TODO: make it a true left-recursive rule]
-        Term        -> Factor ( ("+" / "-") Factor )*   [NOTE: references the rule with higher priority]
-        Expression  -> Term                             [any use for that?]
+        Primary     -> NUMBER | "(" Expression ")" | "|" Expression "|"
+        Unary       -> ("-" Primary) | (Primary "!")
+        Factor      -> Unary ( ("*" | "/" | "^" | "%") Unary )*     [TODO: make it a true left-recursive rule]
+        Term        -> Factor ( ("+" | "-") Factor )*               [NOTE: references the rule with higher priority]
+        Expression  -> Term                                         [any use for that?]
 */
 
 namespace Calc {

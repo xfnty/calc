@@ -1,5 +1,8 @@
 #include <Calc/Lexer.h>
 
+#include <algorithm>
+#include <array>
+
 #include <fmt/format.h>
 #include <tl/expected.hpp>
 #include <spdlog/spdlog.h>
@@ -8,6 +11,24 @@
 
 
 namespace Calc {
+
+    struct TokenOp {
+        char symbol;
+        Token::Type token_type;
+    };
+
+    static const std::array<TokenOp, 10> token_table{{
+        {'+', Token::Type::Add},
+        {'-', Token::Type::Subtract},
+        {'*', Token::Type::Multiply},
+        {'/', Token::Type::Divide},
+        {'^', Token::Type::Power},
+        {'%', Token::Type::Modulo},
+        {'!', Token::Type::Factorial},
+        {'(', Token::Type::OpenBracket},
+        {')', Token::Type::CloseBracket},
+        {'|', Token::Type::StraightBracket},
+    }};
 
     Lexer::Error::Error(const std::string& src, int pos, std::string desc, Lexer::Error::Type type)
     : source(src), position(pos), description(desc), type(type) {
@@ -19,26 +40,14 @@ namespace Calc {
         int cursor = 0;
         while (cursor < text.size()) {
             char chr = text[cursor];
+            std::array<TokenOp, 10>::const_iterator it;
 
             if (chr == ' ' || chr == '\n' || chr == '\t' || chr == '\r') {
                 cursor++;
                 continue;
             }
 
-            else if (chr == '+')
-                tokens.push_back(Token(Token::Type::Add));
-            else if (chr == '-')
-                tokens.push_back(Token(Token::Type::Subtract));
-            else if (chr == '*')
-                tokens.push_back(Token(Token::Type::Multiply));
-            else if (chr == '/')
-                tokens.push_back(Token(Token::Type::Divide));
-            else if (chr == '(')
-                tokens.push_back(Token(Token::Type::OpenBracket));
-            else if (chr == ')')
-                tokens.push_back(Token(Token::Type::CloseBracket));
-
-            else if (chr >= '0' && chr <= '9') {
+            if (chr >= '0' && chr <= '9') {
                 double number = 0;
                 do {
                     number *= 10;
@@ -58,10 +67,12 @@ namespace Calc {
                     }
                 }
 
-                cursor--;
                 tokens.push_back(Token(number));
+                cursor--;
             }
-
+            else if ((it = std::find_if(token_table.begin(), token_table.end(), [=](TokenOp t){ return chr == t.symbol; })) != token_table.end()) {
+                tokens.push_back(Token(it->token_type));
+            }
             else {
                 return tl::unexpected(
                     Lexer::Error(

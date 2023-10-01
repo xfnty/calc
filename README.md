@@ -2,13 +2,18 @@
 
 ![preview.gif](.github/preview.gif)
 
+## Features
+- Floating-point numbers
+- Operators: `+`, `-`, `*`, `/`, `^`, `%`, `!`
+- Grouping expressions: `(...)`, `|...|`
+
 ## Building and Running
 - Configure, build and run (after cloning the repo): `make`
 - Configure CMake: `make c`
 - Build the project: `make b`, `make build`
-- Build and run: `make args="'-2 * 2 + -1.5'"`
+- Build and run: `make args="'-2 * 2 + 1.5!'"`
 - Run: `make r ...`
-- Run using gdb: `make d args="'x + y'"`
+- Run using gdb: `make d args="'1+5!'"`
 
 `make configure build_type=Release` will disable debug messages.
 
@@ -21,6 +26,5 @@
 
 ## TODO
 - Parser error messages
-- More operators: `^`, `%`, `|...|`, `x!` ...
 - Builtin constants: `PI`, `e`, etc.
 - Builtin functions: `sin()`, `ctan()`, `ln()` ...

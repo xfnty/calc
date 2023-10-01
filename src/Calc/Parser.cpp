@@ -1,5 +1,6 @@
 #include "Calc/Expression.h"
 #include <Calc/Parser.h>
+
 #include <memory>
 
 #define ASSERT_HAS_VALUE_RETURN(value) do { if (!(value).has_value()) return (value); } while(0)
@@ -9,7 +10,14 @@ namespace Calc {
 
     Parser::ParseResult Parser::Parse(const std::vector<Token>& tokens) {
         Parser parser(tokens);
-        return parser.Term();
+        auto res = parser.Term();
+        ASSERT_HAS_VALUE_RETURN(res);
+
+        if (parser.current_token_i < tokens.size()) {
+            return tl::unexpected(Parser::Error("Unexpected token."));
+        }
+
+        return res;
     }
 
     Parser::ParseResult Parser::Term() {
@@ -32,7 +40,7 @@ namespace Calc {
         Parser::ParseResult expr = Unary();
         ASSERT_HAS_VALUE_RETURN(expr);
 
-        while (MatchAnyToken({Token::Type::Multiply, Token::Type::Divide})) {
+        while (MatchAnyToken({Token::Type::Multiply, Token::Type::Divide, Token::Type::Power, Token::Type::Modulo})) {
             Token op = PeekToken(-1);
 
             Parser::ParseResult right = Unary();
@@ -52,13 +60,20 @@ namespace Calc {
             return std::make_shared<UnaryExpression>(Token(Token::Type::Subtract), expr.value());
         }
 
-        return Primary();
+        auto expr = Primary();
+        ASSERT_HAS_VALUE_RETURN(expr);
+
+        if (MatchAnyToken({Token::Type::Factorial}))
+            return std::make_shared<UnaryExpression>(Token(Token::Type::Factorial), expr.value());
+
+        return expr;
     }
 
     Parser::ParseResult Parser::Primary() {
         if (MatchAnyToken({Token::Type::Number}))
             return std::make_shared<LiteralExpression>(PeekToken(-1));
 
+        // FIXME: code duplication
         if (MatchAnyToken({Token::Type::OpenBracket})) {
             Parser::ParseResult expr = Term();
             ASSERT_HAS_VALUE_RETURN(expr);
@@ -67,10 +82,20 @@ namespace Calc {
                 return tl::unexpected(Parser::Error("Expected ')' token."));
             }
 
-            return expr;
+            return std::make_shared<GroupingExpression>(expr.value());;
+        }
+        else if (MatchAnyToken({Token::Type::StraightBracket})) {
+            Parser::ParseResult expr = Term();
+            ASSERT_HAS_VALUE_RETURN(expr);
+
+            if (!MatchAnyToken({Token::Type::StraightBracket})) {
+                return tl::unexpected(Parser::Error("Expected '|' closing bracket."));
+            }
+
+            return std::make_shared<AbsoluteExpression>(expr.value());
         }
 
-        return tl::unexpected(Parser::Error("Could not parse the expression."));
+        return tl::unexpected(Parser::Error("Expected a number or a parethesized expression."));
     }
 
     void Parser::Advance(int token_count) {

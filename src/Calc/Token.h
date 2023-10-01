@@ -11,18 +11,22 @@ namespace Calc {
     public:
         enum class Type : int {
             Invalid,
-            Number,         // '1024.5'
+            Number,             // '1024.5'
             // Operators
-            Add,            // '+'
-            Subtract,       // '-'
-            Divide,         // '/'
-            Multiply,       // '*'
+            Add,                // '+'
+            Subtract,           // '-'
+            Divide,             // '/'
+            Multiply,           // '*'
+            Power,              // '^'
+            Modulo,             // '%'
+            Factorial,          // '!'
             // Other
-            OpenBracket,    // '('
-            CloseBracket,   // ')'
+            OpenBracket,        // '('
+            CloseBracket,       // ')'
+            StraightBracket,    // '|'
         };
 
-        // Use BetterEnums?
+        // FIXME: Use BetterEnums?
         static constexpr const char* Names[] = {
             "INVALID",
             "NUM",
@@ -30,13 +34,17 @@ namespace Calc {
             "-",
             "/",
             "*",
+            "^",
+            "%",
+            "!",
             "(",
             ")",
+            "|",
         };
 
     public:
         const Type      type;
-        const double   number;
+        const double    number;
 
         Token(Type type) : type(type), number(0) {}
         Token(double number) : type(Type::Number), number(number) {}
