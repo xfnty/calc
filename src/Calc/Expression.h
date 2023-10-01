@@ -2,12 +2,14 @@
 #define _CALC_EXPRESSION_H_
 
 #include <cmath>
-#include <cstdint>
+#include <string>
 #include <memory>
+#include <cstdint>
 
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
+#include <Calc/Util.h>
 #include <Calc/Token.h>
 
 
@@ -43,11 +45,12 @@ namespace Calc {
     class LiteralExpression : public Expression {
     public:
         const Token token;
-        const double& number = token.number;
 
         LiteralExpression(Token t) : token(t) {};
         void Accept(ExpressionVisitor& visitor) const override { visitor.VisitLiteralExpression(*this); }
-        double Evaluate() const override { return number; }
+        double Evaluate() const override {
+            return token.number;
+        }
     };
 
     class UnaryExpression : public Expression {
@@ -117,7 +120,9 @@ namespace Calc {
         std::string buffer;
 
         void VisitLiteralExpression(const LiteralExpression& expr) override {
-            buffer += fmt::format("{}", expr.number);
+            buffer += (expr.token.type == Token::Type::Identifier)
+                ? (expr.token.id)
+                : (fmt::format("{}", expr.token.number));
         }
 
         void VisitUnaryExpression(const UnaryExpression& expr) override {

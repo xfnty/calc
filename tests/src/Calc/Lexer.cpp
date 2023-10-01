@@ -15,7 +15,7 @@ using namespace Calc;
 TEST_CASE("Lexer") {
 
     SECTION("Valid data") {
-        auto tokens = Lexer::Tokenize("+-/*()123");
+        auto tokens = Lexer::Tokenize("+-/*()123E");
         REQUIRE(tokens.has_value());
 
         auto ideal_output = std::vector<Token>{
@@ -25,13 +25,14 @@ TEST_CASE("Lexer") {
             Token(Token::Type::Multiply),
             Token(Token::Type::OpenBracket),
             Token(Token::Type::CloseBracket),
-            Token(123)
+            Token(123),
+            Token("E"),
         };
         REQUIRE(tokens.value() == ideal_output);
     }
 
     SECTION("Invalid data") {
-        auto tokens = Lexer::Tokenize("1 + 2 + x");
+        auto tokens = Lexer::Tokenize("1 + 2 + $");
         REQUIRE(!tokens.has_value());
         REQUIRE(tokens.error().type == Lexer::Error::Type::InvalidToken);
     }

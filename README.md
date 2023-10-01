@@ -4,6 +4,7 @@
 
 ## Features
 - Floating-point numbers
+- Mathematical constants: `Pi`, `e`
 - Operators: `+`, `-`, `*`, `/`, `^`, `%`, `!`
 - Grouping expressions: `(...)`, `|...|`
 
@@ -26,5 +27,7 @@
 
 ## TODO
 - Parser error messages
+- Use `ExpressionVisitor` interface instead of `Expression.Evaluate()`
+- Increase precedence of `^` operator
 - Builtin constants: `PI`, `e`, etc.
-- Builtin functions: `sin()`, `ctan()`, `ln()` ...
+- Builtin functions: `sin()`, `ctan()`, `ln()`, `floor()`, `ceil()` ...

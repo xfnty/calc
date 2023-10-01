@@ -50,6 +50,8 @@ int main(int argc, char const* argv[]) {
 
         if (token.type == Token::Type::Number)
             tokens_repr += fmt::to_string(token.number);
+        else if (token.type == Token::Type::Identifier)
+            tokens_repr += token.id;
         else
             tokens_repr += Token::Names[(int)token.type];
 

@@ -25,7 +25,7 @@
         Expression  - any of the things above
 
     Grammar:
-        Primary     -> NUMBER | "(" Expression ")" | "|" Expression "|"
+        Primary     -> NUMBER | ID | "(" Expression ")" | "|" Expression "|"
         Unary       -> ("-" Primary) | (Primary "!")
         Factor      -> Unary ( ("*" | "/" | "^" | "%") Unary )*     [TODO: make it a true left-recursive rule]
         Term        -> Factor ( ("+" | "-") Factor )*               [NOTE: references the rule with higher priority]

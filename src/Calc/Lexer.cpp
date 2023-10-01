@@ -1,7 +1,8 @@
 #include <Calc/Lexer.h>
 
-#include <algorithm>
 #include <array>
+#include <string>
+#include <algorithm>
 
 #include <fmt/format.h>
 #include <tl/expected.hpp>
@@ -39,15 +40,14 @@ namespace Calc {
 
         int cursor = 0;
         while (cursor < text.size()) {
-            char chr = text[cursor];
             std::array<TokenOp, 10>::const_iterator it;
 
-            if (chr == ' ' || chr == '\n' || chr == '\t' || chr == '\r') {
+            if (text[cursor] == ' ' || text[cursor] == '\n' || text[cursor] == '\t' || text[cursor] == '\r') {
                 cursor++;
                 continue;
             }
 
-            if (chr >= '0' && chr <= '9') {
+            if (text[cursor] >= '0' && text[cursor] <= '9') {
                 double number = 0;
                 do {
                     number *= 10;
@@ -70,7 +70,16 @@ namespace Calc {
                 tokens.push_back(Token(number));
                 cursor--;
             }
-            else if ((it = std::find_if(token_table.begin(), token_table.end(), [=](TokenOp t){ return chr == t.symbol; })) != token_table.end()) {
+            else if (text[cursor] == '_' || (text[cursor] >= 'a' && text[cursor] <= 'z') || (text[cursor] >= 'A' && text[cursor] <= 'Z')) {
+                std::string id;
+                do {
+                    id.push_back(text[cursor]);
+                    cursor++;
+                } while (text[cursor] == '_' || (text[cursor] >= 'a' && text[cursor] <= 'z') || (text[cursor] >= 'A' && text[cursor] <= 'Z'));
+                tokens.push_back(Token(id));
+                cursor--;
+            }
+            else if ((it = std::find_if(token_table.begin(), token_table.end(), [=](TokenOp t){ return text[cursor] == t.symbol; })) != token_table.end()) {
                 tokens.push_back(Token(it->token_type));
             }
             else {
@@ -78,7 +87,7 @@ namespace Calc {
                     Lexer::Error(
                         text,
                         cursor,
-                        fmt::format("Invalid token '{}'", chr),
+                        fmt::format("Invalid token '{}'", text[cursor]),
                         Lexer::Error::Type::InvalidToken
                     )
                 );
