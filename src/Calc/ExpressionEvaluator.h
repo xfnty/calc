@@ -1,6 +1,7 @@
 #ifndef _CALC_EXPRESSIONEVALUATOR_H_
 #define _CALC_EXPRESSIONEVALUATOR_H_
 
+#include <stack>
 #include <string>
 
 #include <tl/expected.hpp>
@@ -18,8 +19,10 @@ namespace Calc {
             Error(const std::string& description);
         };
 
+        using EvaluationResult = tl::expected<Token::number_type, Error>;
+
     public:
-        static tl::expected<Token::number_type, Error> Evaluate(ExpressionPtr expr);
+        static EvaluationResult Evaluate(ExpressionPtr expr);
 
         void VisitLiteralExpression(const LiteralExpression& expr) override;
         void VisitUnaryExpression(const UnaryExpression& expr) override;
@@ -30,6 +33,7 @@ namespace Calc {
     private:
         const ExpressionPtr root;
         std::stack<Token::number_type> stack;
+        EvaluationResult tmp_result;
 
         ExpressionEvaluator(ExpressionPtr expr);
     };

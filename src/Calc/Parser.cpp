@@ -4,7 +4,7 @@
 
 #include <spdlog/spdlog.h>
 
-#define ASSERT_HAS_VALUE_RETURN(value) do { if (!(value).has_value()) return (value); } while(0)
+#include <Calc/Util.h>
 
 
 namespace Calc {
@@ -12,7 +12,7 @@ namespace Calc {
     Parser::ParseResult Parser::Parse(const std::vector<Token>& tokens) {
         Parser parser(tokens);
         auto res = parser.Term();
-        ASSERT_HAS_VALUE_RETURN(res);
+        ASSERT_HAS_VALUE_PROPAGATE(res);
 
         if (parser.current_token_i < tokens.size()) {
             return tl::unexpected(Parser::Error("Unexpected token."));
@@ -23,13 +23,13 @@ namespace Calc {
 
     Parser::ParseResult Parser::Term() {
         Parser::ParseResult expr = Factor();
-        ASSERT_HAS_VALUE_RETURN(expr);
+        ASSERT_HAS_VALUE_PROPAGATE(expr);
 
         while (MatchAnyToken({Token::Type::Add, Token::Type::Subtract})) {
             Token op = PeekToken(-1);
 
             Parser::ParseResult right = Factor();
-            ASSERT_HAS_VALUE_RETURN(right);
+            ASSERT_HAS_VALUE_PROPAGATE(right);
 
             expr.value() = std::make_shared<BinaryExpression>(expr.value(), op, right.value());
         }
@@ -39,13 +39,13 @@ namespace Calc {
 
     Parser::ParseResult Parser::Factor() {
         Parser::ParseResult expr = Unary();
-        ASSERT_HAS_VALUE_RETURN(expr);
+        ASSERT_HAS_VALUE_PROPAGATE(expr);
 
         while (MatchAnyToken({Token::Type::Multiply, Token::Type::Divide, Token::Type::Power, Token::Type::Modulo})) {
             Token op = PeekToken(-1);
 
             Parser::ParseResult right = Unary();
-            ASSERT_HAS_VALUE_RETURN(right);
+            ASSERT_HAS_VALUE_PROPAGATE(right);
 
             expr.value() = std::make_shared<BinaryExpression>(expr.value(), op, right.value());
         }
@@ -56,13 +56,13 @@ namespace Calc {
     Parser::ParseResult Parser::Unary() {
         if (MatchAnyToken({Token::Type::Subtract})) {
             Parser::ParseResult expr = Primary();
-            ASSERT_HAS_VALUE_RETURN(expr);
+            ASSERT_HAS_VALUE_PROPAGATE(expr);
 
             return std::make_shared<UnaryExpression>(Token(Token::Type::Subtract), expr.value());
         }
 
         auto expr = Primary();
-        ASSERT_HAS_VALUE_RETURN(expr);
+        ASSERT_HAS_VALUE_PROPAGATE(expr);
 
         if (MatchAnyToken({Token::Type::Factorial}))
             return std::make_shared<UnaryExpression>(Token(Token::Type::Factorial), expr.value());
@@ -77,7 +77,7 @@ namespace Calc {
         // FIXME: code duplication
         if (MatchAnyToken({Token::Type::OpenBracket})) {
             Parser::ParseResult expr = Term();
-            ASSERT_HAS_VALUE_RETURN(expr);
+            ASSERT_HAS_VALUE_PROPAGATE(expr);
 
             if (!MatchAnyToken({Token::Type::CloseBracket})) {
                 return tl::unexpected(Parser::Error("Expected ')' token."));
@@ -87,7 +87,7 @@ namespace Calc {
         }
         else if (MatchAnyToken({Token::Type::StraightBracket})) {
             Parser::ParseResult expr = Term();
-            ASSERT_HAS_VALUE_RETURN(expr);
+            ASSERT_HAS_VALUE_PROPAGATE(expr);
 
             if (!MatchAnyToken({Token::Type::StraightBracket})) {
                 return tl::unexpected(Parser::Error("Expected '|' closing bracket."));

@@ -19,6 +19,7 @@ project("calc" LANGUAGES CXX)
 # ===== Third Party libraries ===== #
 include_thirdparty("fmt" "include" "fmt")
 include_thirdparty("spdlog" "include" "spdlog")
+include_thirdparty("linenoise" "src" "linenoise")
 include_thirdparty("expected" "include" "expected")
 include_thirdparty("Catch2" "src" "Catch2::Catch2WithMain")
 

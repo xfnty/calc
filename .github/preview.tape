@@ -2,12 +2,32 @@ Output preview.gif
 
 Set TypingSpeed 100ms
 
-Type "./calc '2 + 2 / (1 * 0.5)'"
+Hide
+Type "./calc"
+Enter
+Show
+
+Type "2 + 2 / (1 * 0.5) ^ |-0.5|"
 Sleep 2s
 Enter
-Sleep 7s
+Sleep 6s
 
-Type "./calc '2 + x'"
+Type "2&2"
+Sleep 2s
+Enter
+Sleep 6s
+
+Type "2 + x"
+Sleep 2s
+Enter
+Sleep 6s
+
+Type "(-5)!"
+Sleep 2s
+Enter
+Sleep 6s
+
+Type "2 * Pi * 6371"
 Sleep 2s
 Enter
 Sleep 10s

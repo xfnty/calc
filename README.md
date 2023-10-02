@@ -3,6 +3,7 @@
 ![preview.gif](.github/preview.gif)
 
 ## Features
+- REPL
 - Floating-point numbers
 - Mathematical constants: `Pi`, `e`
 - Operators: `+`, `-`, `*`, `/`, `^`, `%`, `!`
@@ -24,10 +25,13 @@
 - [expected](https://github.com/TartanLlama/expected)
 - [fmt](https://github.com/fmtlib/fmt)
 - [spdlog](https://github.com/gabime/spdlog)
+- [cpp-linenoise](https://github.com/yhirose/cpp-linenoise)
 
 ## TODO
 - Parser error messages
-- Irresponsible `std::string` usage
-- Increase precedence of `^` operator
-- Builtin constants: `PI`, `e`, etc.
+- Make macros in `Util.h` an inline functions
+- Better stack-related error handling
+- Remove `else` blocks at the end of functions in `ExpressionEvaluator`
+- Fix `^` operator and increase its precedence
+- Better `std::string` usage
 - Builtin functions: `sin()`, `ctan()`, `ln()`, `floor()`, `ceil()` ...

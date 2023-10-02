@@ -4,44 +4,48 @@
 
 #include <fmt/std.h>
 #include <fmt/format.h>
+#include <linenoise.hpp>
 #include <spdlog/spdlog.h>
 
+#include <Calc/Util.h>
 #include <Calc/Token.h>
 #include <Calc/Lexer.h>
 #include <Calc/Parser.h>
 #include <Calc/Expression.h>
 #include <Calc/ExpressionFormatter.h>
+#include <Calc/ExpressionEvaluator.h>
 
 using namespace Calc;
 
 
+bool Evaluate(const std::string& input);
+
 int main(int argc, char const* argv[]) {
-    if (argc < 2) {
-        SPDLOG_TRACE(
-            "Usage: {} <expression>",
-            std::filesystem::path(argv[0]).filename().stem()
-        );
-        return 0;
+    linenoise::SetHistoryMaxLen(32);
+
+    std::string line;
+    bool should_quit = false;
+    while (!(should_quit = linenoise::Readline("> ", line))) {
+        Evaluate(line);
+        linenoise::AddHistory(line.c_str());
     }
 
-    std::string expression;
-    for (int i = 1; i < argc; i++) {
-        expression += argv[i];
-        expression += (i < argc - 1) ? " " : "";
-    }
+    return 0;
+}
 
+bool Evaluate(const std::string& input) {
 #ifndef NDEBUG
-    SPDLOG_DEBUG("expression=\"{}\"", expression);
+    SPDLOG_DEBUG("expression=\"{}\"", input);
 #endif
 
-    auto tokens = Lexer::Tokenize(expression);
+    auto tokens = Lexer::Tokenize(input);
     if (!tokens.has_value()) {
         SPDLOG_ERROR(tokens.error().description);
         printf("| %s\n| ", tokens.error().source.c_str());
         for (int i = 0; i < tokens.error().position; i++)
             printf(" ");
         printf("^\n");
-        return 1;
+        return false;
     }
 
 #ifndef NDEBUG
@@ -60,13 +64,20 @@ int main(int argc, char const* argv[]) {
 
     auto root = Parser::Parse(tokens.value());
     if (!root.has_value()) {
-        SPDLOG_ERROR("{}", root.error().description);
-        return 2;
+        SPDLOG_ERROR(root.error().description);
+        return false;
     }
 
 #ifndef NDEBUG
     SPDLOG_DEBUG("ast={}", ExpressionFormatter::Format(root.value()));
 #endif
 
-    return 0;
+    auto eval_result = ExpressionEvaluator::Evaluate(root.value());
+    if (!eval_result.has_value()) {
+        SPDLOG_ERROR(eval_result.error().description);
+        return false;
+    }
+
+    SPDLOG_TRACE(eval_result.value());
+    return true;
 }
