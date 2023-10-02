@@ -2,6 +2,7 @@
 #define _CALC_TOKEN_H_
 
 #include <string>
+#include <cassert>
 
 #include <fmt/format.h>
 
@@ -45,13 +46,15 @@ namespace Calc {
             "|",
         };
 
+        using number_type = double;
+
     public:
         const Type        type;
-        const double      number;
+        const number_type number;
         const std::string id;
 
         Token(Type type) : type(type), number(0) {}
-        Token(double number) : type(Type::Number), number(number) {}
+        Token(number_type number) : type(Type::Number), number(number) {}
         Token(const std::string& id) : type(Type::Identifier), number(0), id(id) {}
 
         bool operator ==(const Token& other) const {
@@ -67,8 +70,9 @@ namespace Calc {
                 return fmt::to_string(number);
             else if (type == Token::Type::Identifier)
                 return id;
-            else
-                return Token::Names[(int)type];
+
+            assert((int)type >= 0 && (int)type < sizeof(Names)/sizeof(Names[0]));
+            return Token::Names[(int)type];
         }
     };
 }

@@ -19,7 +19,7 @@ namespace Calc {
         };
 
     public:
-        static tl::expected<double, Error> Evaluate(ExpressionPtr expr);
+        static tl::expected<Token::number_type, Error> Evaluate(ExpressionPtr expr);
 
         void VisitLiteralExpression(const LiteralExpression& expr) override;
         void VisitUnaryExpression(const UnaryExpression& expr) override;
@@ -29,6 +29,7 @@ namespace Calc {
 
     private:
         const ExpressionPtr root;
+        std::stack<Token::number_type> stack;
 
         ExpressionEvaluator(ExpressionPtr expr);
     };

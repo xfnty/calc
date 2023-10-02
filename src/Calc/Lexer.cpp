@@ -47,7 +47,7 @@ namespace Calc {
             }
 
             if (text[cursor] >= '0' && text[cursor] <= '9') {
-                double number = 0;
+                Token::number_type number = 0;
                 do {
                     number *= 10;
                     number += text[cursor] - '0';
@@ -58,7 +58,7 @@ namespace Calc {
                 if (text[cursor] == '.') {
                     cursor++;
 
-                    double fp = 1;
+                    Token::number_type fp = 1;
                     while (cursor < text.size() && (text[cursor] >= '0' && text[cursor] <= '9')) {
                         number += (text[cursor] - '0') / (10.0 * fp);
                         cursor++;

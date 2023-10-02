@@ -7,7 +7,7 @@ namespace Calc {
 
     ExpressionEvaluator::ExpressionEvaluator(ExpressionPtr expr) : root(expr) {}
 
-    tl::expected<double, ExpressionEvaluator::Error> ExpressionEvaluator::Evaluate(ExpressionPtr expr) {
+    tl::expected<Token::number_type, ExpressionEvaluator::Error> ExpressionEvaluator::Evaluate(ExpressionPtr expr) {
         return tl::unexpected(Error("not implemented."));
     }
 
