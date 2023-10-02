@@ -35,3 +35,4 @@
 - Fix `^` operator and increase its precedence
 - Better `std::string` usage
 - Builtin functions: `sin()`, `ctan()`, `ln()`, `floor()`, `ceil()` ...
+- Fix Windows build
