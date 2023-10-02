@@ -10,6 +10,7 @@
 #include <Calc/Lexer.h>
 #include <Calc/Parser.h>
 #include <Calc/Expression.h>
+#include <Calc/ExpressionFormatter.h>
 
 using namespace Calc;
 
@@ -48,12 +49,7 @@ int main(int argc, char const* argv[]) {
     for (int i = 0; i < tokens.value().size(); i++) {
         auto token = tokens.value()[i];
 
-        if (token.type == Token::Type::Number)
-            tokens_repr += fmt::to_string(token.number);
-        else if (token.type == Token::Type::Identifier)
-            tokens_repr += token.id;
-        else
-            tokens_repr += Token::Names[(int)token.type];
+        tokens_repr += token.ToString();
 
         if (i + 1 < tokens.value().size())
             tokens_repr += ", ";
@@ -69,12 +65,8 @@ int main(int argc, char const* argv[]) {
     }
 
 #ifndef NDEBUG
-    ExpressionPrinter printer;
-    root.value()->Accept(printer);
-    SPDLOG_DEBUG("ast={}", printer.buffer);
+    SPDLOG_DEBUG("ast={}", ExpressionFormatter::Format(root.value()));
 #endif
-
-    SPDLOG_TRACE("{}", root.value()->Evaluate());
 
     return 0;
 }

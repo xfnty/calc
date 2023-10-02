@@ -27,7 +27,7 @@
 
 ## TODO
 - Parser error messages
-- Use `ExpressionVisitor` interface instead of `Expression.Evaluate()`
+- Irresponsible `std::string` usage
 - Increase precedence of `^` operator
 - Builtin constants: `PI`, `e`, etc.
 - Builtin functions: `sin()`, `ctan()`, `ln()`, `floor()`, `ceil()` ...

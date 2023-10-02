@@ -1,9 +1,8 @@
-#include "spdlog/spdlog.h"
-#include "tl/expected.hpp"
 #include <Calc/Parser.h>
 
-#include <memory>
 #include <cassert>
+
+#include <spdlog/spdlog.h>
 
 #define ASSERT_HAS_VALUE_RETURN(value) do { if (!(value).has_value()) return (value); } while(0)
 
@@ -72,22 +71,8 @@ namespace Calc {
     }
 
     Parser::ParseResult Parser::Primary() {
-        if (MatchAnyToken({Token::Type::Number}))
+        if (MatchAnyToken({Token::Type::Number, Token::Type::Identifier}))
             return std::make_shared<LiteralExpression>(PeekToken(-1));
-
-        if (MatchAnyToken({Token::Type::Identifier})) {
-            auto t = PeekToken(-1);
-            double n = 0;
-            // Reference: https://en.wikipedia.org/wiki/List_of_mathematical_constants#List
-            switch (Hash(t.id.c_str())) {
-                case Hash("e"):   n = 2.71828182845904523536; break;
-                case Hash("Pi"):  n = 3.14159265358979323846; break;
-                default:
-                    return tl::unexpected(Parser::Error(fmt::format("Unknown identifier \"{}\"", t.id)));
-            }
-
-            return std::make_shared<LiteralExpression>(Token(n));
-        }
 
         // FIXME: code duplication
         if (MatchAnyToken({Token::Type::OpenBracket})) {
@@ -111,7 +96,7 @@ namespace Calc {
             return std::make_shared<AbsoluteExpression>(expr.value());
         }
 
-        return tl::unexpected(Parser::Error("Expected a number or a parethesized expression."));
+        return tl::unexpected(Parser::Error("Expected a literal or a parethesized expression."));
     }
 
     void Parser::Advance(int token_count) {

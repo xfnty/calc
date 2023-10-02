@@ -2,7 +2,8 @@
 #define _CALC_TOKEN_H_
 
 #include <string>
-#include <cstdint>
+
+#include <fmt/format.h>
 
 
 namespace Calc {
@@ -59,6 +60,15 @@ namespace Calc {
 
         bool operator !=(const Token& other) const {
             return !(*this == other);
+        }
+
+        std::string ToString() const {
+            if (type == Token::Type::Number)
+                return fmt::to_string(number);
+            else if (type == Token::Type::Identifier)
+                return id;
+            else
+                return Token::Names[(int)type];
         }
     };
 }

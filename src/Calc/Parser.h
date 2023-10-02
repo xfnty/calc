@@ -13,14 +13,14 @@
 
 /*
     Associativity: (left-to-right/right-to-left)
-        * /     Left
-        + -     Left
-        -       Right
+        * / ^ % !   Left
+        + -         Left
+        -           Right
 
     Precedence (priority, from the highest to lowest):
-        Primary     - a number or a grouping
-        Unary       - a possibly negated grouping or a number
-        Factor      - multiplication, division
+        Primary     - a literal or a grouping expression
+        Unary       - a possibly negated grouping, a factorial or a number
+        Factor      - multiplication, division, power, modulo
         Term        - addition, subtraction
         Expression  - any of the things above
 

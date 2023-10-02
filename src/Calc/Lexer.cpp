@@ -1,7 +1,6 @@
 #include <Calc/Lexer.h>
 
 #include <array>
-#include <string>
 #include <algorithm>
 
 #include <fmt/format.h>
