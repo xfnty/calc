@@ -2,6 +2,8 @@
 
 ![preview.gif](.github/preview.gif)
 
+Much simpler [python version](https://github.com/xfnty/calc/tree/simple_version) (140 loc)
+
 ## Features
 - REPL
 - Floating-point numbers
