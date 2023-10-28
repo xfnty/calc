@@ -17,7 +17,7 @@ namespace Calc {
         Token::Type token_type;
     };
 
-    static const std::array<TokenOp, 10> token_table{{
+    static const std::array<TokenOp, 11> token_table{{
         {'+', Token::Type::Add},
         {'-', Token::Type::Subtract},
         {'*', Token::Type::Multiply},
@@ -28,6 +28,7 @@ namespace Calc {
         {'(', Token::Type::OpenBracket},
         {')', Token::Type::CloseBracket},
         {'|', Token::Type::StraightBracket},
+        {',', Token::Type::Comma},
     }};
 
     Lexer::Error::Error(const std::string& src, int pos, std::string desc, Lexer::Error::Type type)
@@ -69,12 +70,16 @@ namespace Calc {
                 tokens.push_back(Token(number));
                 cursor--;
             }
-            else if (text[cursor] == '_' || (text[cursor] >= 'a' && text[cursor] <= 'z') || (text[cursor] >= 'A' && text[cursor] <= 'Z')) {
+            else if (text[cursor] == '_' || (text[cursor] >= 'a' && text[cursor] <= 'z') 
+                    || (text[cursor] >= 'A' && text[cursor] <= 'Z')
+                    || (text[cursor] >= '0' && text[cursor] <= '9')) {
                 std::string id;
                 do {
                     id.push_back(text[cursor]);
                     cursor++;
-                } while (text[cursor] == '_' || (text[cursor] >= 'a' && text[cursor] <= 'z') || (text[cursor] >= 'A' && text[cursor] <= 'Z'));
+                } while (text[cursor] == '_' || (text[cursor] >= 'a' && text[cursor] <= 'z') 
+                    || (text[cursor] >= 'A' && text[cursor] <= 'Z')
+                    || (text[cursor] >= '0' && text[cursor] <= '9'));
                 tokens.push_back(Token(id));
                 cursor--;
             }

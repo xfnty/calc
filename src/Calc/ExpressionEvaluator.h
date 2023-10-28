@@ -29,10 +29,14 @@ namespace Calc {
         void VisitBinaryExpression(const BinaryExpression& expr) override;
         void VisitGroupingExpression(const GroupingExpression& expr) override;
         void VisitAbsoluteExpression(const AbsoluteExpression& expr) override;
+        void VisitFunctionExpression(const FunctionExpression& expr) override;
 
     private:
         const ExpressionPtr root;
         std::stack<Token::number_type> stack;
+        
+        // used as an error marker in Visitor pattern 
+        // but eventually gets returned by Evaluate()
         EvaluationResult tmp_result;
 
         ExpressionEvaluator(ExpressionPtr expr);

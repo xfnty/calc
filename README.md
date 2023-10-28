@@ -9,15 +9,31 @@
 - Operators: `+`, `-`, `*`, `/`, `^`, `%`, `!`
 - Grouping expressions: `(...)`, `|...|`
 
-## Building and Running
-- Configure, build and run (after cloning the repo): `make`
-- Configure CMake: `make c`
-- Build the project: `make b`, `make build`
-- Build and run: `make args="'-2 * 2 + 1.5!'"`
-- Run: `make r ...`
-- Run using gdb: `make d args="'1+5!'"`
+## Supported Grammar
+```
+NUMBER 	= \d+(\.\d+)?
+ID 		= \w[_\w\d]+
 
-`make configure build_type=Release` will disable debug messages.
+Expression = Term
+Term = Factor (("+" | "-") Factor)*
+Factor = Unary (("*" | "/" | "^" | "%") Unary)*
+Unary = ("-" | "!") Primary
+Primary = NUMBER | ID | "(" Expression ")" | "|" Expression "|"
+
+    Grammar:
+        Primary     = NUMBER | ID | "(" Expression ")" | "|" Expression "|"
+        Function    = ID "(" Expression ( "," Expression )* ")" | Primary
+        Unary       = Function | ("-" Function) | (Function "!")
+        Factor      = Unary (("*" | "/" | "^" | "%") Unary)*     [TODO: make it a true left-recursive rule]
+        Term        = Factor (("+" | "-") Factor)*               [NOTE: references the rule with higher priority]
+        Expression  = Term                                       [any use for that?]
+```
+
+## Building and Running
+- All at once: `make`
+- Configure CMake: `make c build_type=Debug`
+- Build the project: `make b`
+- Run: `make r`
 
 ## Credits & References
 - [Crafting Interpreters](https://craftinginterpreters.com/) by Bob Nystrom
@@ -31,7 +47,7 @@
 - Parser error messages
 - Make macros in `Util.h` an inline functions
 - Better stack-related error handling
+  - Implement callstack frames
 - Remove `else` blocks at the end of functions in `ExpressionEvaluator`
 - Fix `^` operator and increase its precedence
 - Better `std::string` usage
-- Builtin functions: `sin()`, `ctan()`, `ln()`, `floor()`, `ceil()` ...

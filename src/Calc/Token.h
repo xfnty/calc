@@ -14,7 +14,7 @@ namespace Calc {
         enum class Type : int {
             Invalid,
             Number,             // '1024.5'
-            Identifier,         // 'asin'
+            Identifier,         // 'asin', 'log2'
             // Operators
             Add,                // '+'
             Subtract,           // '-'
@@ -27,6 +27,7 @@ namespace Calc {
             OpenBracket,        // '('
             CloseBracket,       // ')'
             StraightBracket,    // '|'
+            Comma,              // ','
         };
 
         // FIXME: Use BetterEnums?
@@ -44,6 +45,7 @@ namespace Calc {
             "(",
             ")",
             "|",
+            ",",
         };
 
         using number_type = double;

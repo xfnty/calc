@@ -11,26 +11,6 @@
 #include <Calc/Token.h>
 #include <Calc/Expression.h>
 
-/*
-    Associativity: (left-to-right/right-to-left)
-        * / ^ % !   Left
-        + -         Left
-        -           Right
-
-    Precedence (priority, from the highest to lowest):
-        Primary     - a literal or a grouping expression
-        Unary       - a possibly negated grouping, a factorial or a number
-        Factor      - multiplication, division, power, modulo
-        Term        - addition, subtraction
-        Expression  - any of the things above
-
-    Grammar:
-        Primary     -> NUMBER | ID | "(" Expression ")" | "|" Expression "|"
-        Unary       -> ("-" Primary) | (Primary "!")
-        Factor      -> Unary ( ("*" | "/" | "^" | "%") Unary )*     [TODO: make it a true left-recursive rule]
-        Term        -> Factor ( ("+" | "-") Factor )*               [NOTE: references the rule with higher priority]
-        Expression  -> Term                                         [any use for that?]
-*/
 
 namespace Calc {
 
@@ -54,16 +34,19 @@ namespace Calc {
 
         Parser(const std::vector<Token>& tokens) : tokens(tokens) {};
 
-        ParseResult Term();
-        ParseResult Factor();
-        ParseResult Unary();
         ParseResult Primary();
+        ParseResult Function();
+        ParseResult Unary();
+        ParseResult Factor();
+        ParseResult Term();
 
         void Advance(int token_count = 1);
         Token PeekToken(int offset = 0) const;
 
         // Check whether current token matches any of the given `tokens` and then `Advance()`
         bool MatchAnyToken(std::initializer_list<Token::Type> tokens);
+
+        bool MatchTokenSequence(std::initializer_list<Token::Type> tokens);
     };
 
 }

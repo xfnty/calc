@@ -19,6 +19,7 @@ namespace Calc {
         void VisitBinaryExpression(const BinaryExpression& expr) override;
         void VisitGroupingExpression(const GroupingExpression& expr) override;
         void VisitAbsoluteExpression(const AbsoluteExpression& expr) override;
+        void VisitFunctionExpression(const FunctionExpression& expr) override;
 
     private:
         std::string buffer;

@@ -1,6 +1,7 @@
 #include <Calc/ExpressionEvaluator.h>
 
 #include <Calc/Util.h>
+#include <algorithm>
 #include <cmath>
 
 
@@ -102,6 +103,97 @@ namespace Calc {
         ASSERT_HAS_VALUE_RETURN(tmp_result);
 
         stack.top() = std::abs(stack.top());
+    }
+
+    void ExpressionEvaluator::VisitFunctionExpression(const FunctionExpression& expr) {
+    	for (auto& arg : expr.args) {
+	        arg->Accept(*this);
+	        ASSERT_HAS_VALUE_RETURN(tmp_result);
+    	}
+
+        switch (Hash(expr.id.id.c_str())) {
+        case Hash("min"): {
+            auto b = stack.top();
+            stack.pop();
+            auto a = stack.top();
+            stack.pop();
+            stack.push(std::min(a, b));
+        } break;
+
+        case Hash("max"): {
+            auto b = stack.top();
+            stack.pop();
+            auto a = stack.top();
+            stack.pop();
+            stack.push(std::max(a, b));
+        } break;
+
+        case Hash("floor"): {
+            stack.top() = std::floor(stack.top());
+        } break;
+        
+        case Hash("ceil"): {
+            stack.top() = std::ceil(stack.top());
+        } break;
+
+        case Hash("trunc"): {
+            stack.top() = std::trunc(stack.top());
+        } break;
+
+        case Hash("sign"): {
+            stack.top() = (stack.top() >= 0) ? (1) : (-1);
+        } break;
+
+        case Hash("clamp"): {
+            auto c = stack.top();
+            stack.pop();
+            auto b = stack.top();
+            stack.pop();
+            auto a = stack.top();
+            stack.pop();
+            stack.push(std::clamp(a, b, c));
+        } break;
+
+        case Hash("exp"): {
+            stack.top() = std::exp(stack.top());
+        } break;
+
+        case Hash("ln"): {
+            stack.top() = std::log(stack.top());
+        } break;
+
+        case Hash("sqrt"): {
+            stack.top() = std::sqrt(stack.top());
+        } break;
+
+        case Hash("sin"): {
+            stack.top() = std::sin(stack.top());
+        } break;
+
+        case Hash("cos"): {
+            stack.top() = std::cos(stack.top());
+        } break;
+
+        case Hash("tan"): {
+            stack.top() = std::tan(stack.top());
+        } break;
+
+        case Hash("asin"): {
+            stack.top() = std::asin(stack.top());
+        } break;
+
+        case Hash("acos"): {
+            stack.top() = std::acos(stack.top());
+        } break;
+
+        case Hash("atan"): {
+            stack.top() = std::atan(stack.top());
+        } break;
+
+        default:
+            tmp_result = tl::unexpected(Error(fmt::format("unknown function \"{}\"", expr.id.ToString())));
+            return;
+        }
     }
 
 }

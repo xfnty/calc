@@ -32,6 +32,7 @@ namespace Calc {
     class BinaryExpression;
     class GroupingExpression;
     class AbsoluteExpression;
+    class FunctionExpression;
 
     class ExpressionVisitor {
     public:
@@ -40,6 +41,7 @@ namespace Calc {
         virtual void VisitBinaryExpression(const BinaryExpression& expr) = 0;
         virtual void VisitGroupingExpression(const GroupingExpression& expr) = 0;
         virtual void VisitAbsoluteExpression(const AbsoluteExpression& expr) = 0;
+        virtual void VisitFunctionExpression(const FunctionExpression& expr) = 0;
     };
 
     class LiteralExpression : public Expression {
@@ -81,6 +83,15 @@ namespace Calc {
     public:
         AbsoluteExpression(ExpressionPtr expr) : GroupingExpression(expr) {};
         void Accept(ExpressionVisitor& visitor) const override { visitor.VisitAbsoluteExpression(*this); }
+    };
+
+    class FunctionExpression : public Expression {
+    public:
+        const Token id;
+        const std::vector<ExpressionPtr> args;
+
+        FunctionExpression(Token id, std::vector<ExpressionPtr> args) : id(id), args(args) {};
+        void Accept(ExpressionVisitor& visitor) const override { visitor.VisitFunctionExpression(*this); }
     };
 
 }

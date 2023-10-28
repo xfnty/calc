@@ -1,7 +1,11 @@
+#include "Calc/Expression.h"
+#include "tl/expected.hpp"
 #include <Calc/Parser.h>
 
+#include <algorithm>
 #include <cassert>
 
+#include <memory>
 #include <spdlog/spdlog.h>
 
 #include <Calc/Util.h>
@@ -15,7 +19,7 @@ namespace Calc {
         ASSERT_HAS_VALUE_PROPAGATE(res);
 
         if (parser.current_token_i < tokens.size()) {
-            return tl::unexpected(Parser::Error("Unexpected token."));
+            // return tl::unexpected(Parser::Error("Unexpected token."));
         }
 
         return res;
@@ -55,19 +59,42 @@ namespace Calc {
 
     Parser::ParseResult Parser::Unary() {
         if (MatchAnyToken({Token::Type::Subtract})) {
-            Parser::ParseResult expr = Primary();
+            Parser::ParseResult expr = Function();
             ASSERT_HAS_VALUE_PROPAGATE(expr);
 
             return std::make_shared<UnaryExpression>(Token(Token::Type::Subtract), expr.value());
         }
 
-        auto expr = Primary();
+        auto expr = Function();
         ASSERT_HAS_VALUE_PROPAGATE(expr);
 
         if (MatchAnyToken({Token::Type::Factorial}))
             return std::make_shared<UnaryExpression>(Token(Token::Type::Factorial), expr.value());
 
         return expr;
+    }
+
+    Parser::ParseResult Parser::Function() {
+    	SPDLOG_DEBUG("func seq {}", MatchTokenSequence({Token::Type::Identifier, Token::Type::OpenBracket}));
+    	if (MatchTokenSequence({Token::Type::Identifier, Token::Type::OpenBracket})) {
+    		auto id = PeekToken(-2);
+    		SPDLOG_DEBUG("func id {}", id.ToString());
+    		
+    		std::vector<ExpressionPtr> args;
+            do {
+            	auto arg = Term();
+            	ASSERT_HAS_VALUE_PROPAGATE(arg);
+
+            	args.push_back(arg.value());
+            } while (MatchTokenSequence({Token::Type::Comma}));
+
+            if (!MatchAnyToken({Token::Type::CloseBracket}))
+            	return tl::unexpected(Parser::Error("Expected \")\" at the end of function"));
+
+            return std::make_shared<FunctionExpression>(id, args);
+    	}
+
+    	return Primary();
     }
 
     Parser::ParseResult Parser::Primary() {
@@ -113,11 +140,24 @@ namespace Calc {
         if (possible_matches.size() == 0 || current_token_i >= tokens.size())
             return false;
 
-        for (int i = 0; i < possible_matches.size(); i++)
+        for (int i = 0; i < possible_matches.size(); i++) {
             if (PeekToken().type == *(possible_matches.begin() + i)) {
                 Advance();
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    bool Parser::MatchTokenSequence(std::initializer_list<Token::Type> seq) {
+    	if (seq.size() == 0 || seq.size() > (tokens.size() - current_token_i) || current_token_i >= seq.size())
+            return false;
+
+        if (std::equal(tokens.begin(), tokens.end(), seq.begin())) {
+        	current_token_i += seq.size();
+        	return true;
+        }
 
         return false;
     }

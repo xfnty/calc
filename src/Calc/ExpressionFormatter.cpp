@@ -49,4 +49,15 @@ namespace Calc {
         buffer += '|';
     }
 
+    void ExpressionFormatter::VisitFunctionExpression(const FunctionExpression& expr) {
+        buffer += expr.id.ToString();
+        buffer += '(';
+        for (int i = 0; i < expr.args.size(); i++) {
+        	expr.args[i]->Accept(*this);
+        	if (i < expr.args.size() - 1)
+        		buffer += ", ";
+        }
+        buffer += ')';
+    }
+
 }
