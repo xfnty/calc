@@ -1,5 +1,6 @@
 #include <memory>
 #include <stdio.h>
+#include <string.h>
 #include <filesystem>
 
 #include <fmt/std.h>
@@ -21,16 +22,25 @@ using namespace Calc;
 bool Evaluate(const std::string& input);
 
 int main(int argc, char const* argv[]) {
-    linenoise::SetHistoryMaxLen(32);
-
-    std::string line;
-    bool should_quit = false;
-    while (!(should_quit = linenoise::Readline("> ", line))) {
-        Evaluate(line);
-        linenoise::AddHistory(line.c_str());
+    if (argc <= 1 || argc > 2) {
+        SPDLOG_INFO("Usage: calc [-i]");
+        return 0;
     }
 
-    return 0;
+    if (strcmp(argv[1], "-i") == 0) {
+        linenoise::SetHistoryMaxLen(32);
+
+        std::string line;
+        bool should_quit = false;
+        while (!(should_quit = linenoise::Readline("> ", line))) {
+            Evaluate(line);
+            linenoise::AddHistory(line.c_str());
+        }
+
+        return 0;
+    }
+
+    return !Evaluate(argv[1]);
 }
 
 bool Evaluate(const std::string& input) {
